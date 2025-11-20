@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+/* 2. @theme bloğu ile kendi özel animasyonlarımızı tanımlıyoruz. */
+@theme {
+  --animation-fade-in-up: fadeInUp 0.5s ease-out forwards;
+  --animation-aurora: aurora 60s linear infinite;
+}
+
+/* 3. Standart @keyframes ile bu animasyonların nasıl çalışacağını belirtiyoruz. */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes aurora {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 300% 50%;
+  }
+}
+
+.animate-fade-in-up {
+  animation: var(--animation-fade-in-up);
+}
+
+.animate-aurora {
+  animation: var(--animation-aurora);
+}

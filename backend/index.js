@@ -1,6 +1,6 @@
 import express from "express";
 import { GoogleGenAI } from "@google/genai";
-import OpenAI from "openai";
+import { OpenRouter } from "@openrouter/sdk";
 import dotenv from "dotenv";
 import cors from "cors";
 
@@ -21,8 +21,7 @@ app.listen(port, () => {
 });
 
 const gemini = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-const openai = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
+const openRouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 });
 
@@ -48,7 +47,7 @@ const openaiHistory = [
 
 function initializeGeminiChat() {
   geminiChat = gemini.chats.create({
-    model: "gemini-2.5-flash-preview-05-20",
+    model: "gemini-2.5-flash",
     history: [],
     config: {
       temperature: 0.6,
@@ -82,8 +81,8 @@ async function askGemini(prompt) {
 
 async function askDeepSeek(prompt) {
   openaiHistory.push({ role: "user", content: prompt });
-  const response = await openai.chat.completions.create({
-    model: "deepseek/deepseek-chat-v3-0324:free",
+  const response = await openRouter.chat.send({
+    model: "deepseek/deepseek-r1-0528-qwen3-8b:free",
     messages: openaiHistory,
     temperature: 0.7,
     top_p: 1,
@@ -122,6 +121,7 @@ Lütfen bu konudaki AÇILIŞ ARGÜMANINI belirterek tartışmayı başlat. Sadec
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.error("BÜYÜK HATA DETAYI:", error?.response?.data || error);
   }
 });
 
@@ -143,6 +143,7 @@ app.post("/api/conversation", async (req, res) => {
     res.json({ speaker, response, next });
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.error("BÜYÜK HATA DETAYI:", error?.response?.data || error);
   }
 });
 
